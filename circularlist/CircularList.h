@@ -1,266 +1,412 @@
 #ifndef __CIRCULAR_LIST_H__
 #define __CIRCULAR_LIST_H__
 
+#pragma once 
+
 #include <iostream>
 using namespace std;
 
-#pragma once 
-
+template <class T>
 class CircularList;
+
+template <class T>
 class Iterator;
 
-//template <class T>
-
-
 /*---Node Class---*/
+
+template <class T>
 class Node {
 
 private:
-	int		_coefficient, _exponent;
-	Node*	_next;
-	//T _data; 
-	// TODO implement templating
+	Node<T>*	_next;
+	T			_data; 
 
 public:
 
-	Node() {
-		_coefficient = _exponent = 0;
-		_next = (Node*)0;
-	}
+	Node();
+	void SetData(T data);
+	void Print() const;
+	friend ostream& operator<<(ostream& os, const Node<T>& n);
+	friend istream& operator>>(istream& is, Node<T>& n);
 
-	void SetCoefficient(int n) {
-		_coefficient = n;
-	}
-
-	void SetExponent(int n) {
-		_exponent = n;
-	}
-
-
-	void Print() const {
-	
-	}
-
-	friend ostream& operator<<(ostream& os, const Node& n) {
-		return os << "Coefficient: " << n._coefficient << endl << "Exponent: " << n._exponent << endl << endl;
-	}
-
-	//TODO want to be able to read in two ints from input stream and set them to exponent and coeff
-	friend istream& operator>>(istream& is, Node& n) {
-		return is >> n._coefficient >> n._exponent;
-	}
-
-	friend ostream& operator<<(ostream& os, const CircularList& cl);// TODO TAKE THIS OUT IF POSSIBLE
-	friend class CircularList;
+	friend class CircularList<T>;
+	friend class Iterator<T>;
 };
 
 
 
 /*---Circular List Class---*/
+template <class T>
 class CircularList {
 
 private:
-	Node*	_head;
-	int		_size;
+	Node<T>*	_head;
+	int			_size;
 
 public:
-	
-	CircularList() {
-		_head = (Node*)0;
-		_size = 0;
-	}
 
-	CircularList(const CircularList& src) {
-		if (this != &src) {
-			*this = src;
-		}
-	}
+	CircularList();
+	CircularList(const CircularList<T>& src);
+	void Append(Node<T> n);
+	void Push(Node<T> n);
+	void Pop();
+	int GetSize() const;
+	void Print() const;
+	CircularList<T>& operator=(const CircularList<T>& rhs);
+	~CircularList();
 
-	void Append(Node n) {
-
-		Node* newNode = new Node, *p;
-
-		newNode->_coefficient	=	n._coefficient;
-		newNode->_exponent		=	n._exponent;
-		newNode->_next			=	(Node*)0;
-
-		if (_head) {
-
-			//if there are nodes in the list
-			
-			int i;
-
-
-			for (i = 0, p = _head; i < _size - 1; p = p->_next, i++);//points "p" to last node in list
-
-			p->_next = newNode;
-			newNode->_next = _head;
-
-		} else {
-			
-			//if the list is empty
-
-			_head = newNode;
-			_head->_next = _head;
-
-		}
-
-		_size++;
-
-	}
-
-	//TODO needs to be tested
-	void Push(Node n) {
-
-		Node* newNode = new Node, *p;
-		newNode->_coefficient = n._coefficient;
-		newNode->_exponent = n._exponent;
-		newNode->_next = (Node*)0;
-
-		if (_head) {
-			newNode->_next = _head;
-			_head = newNode;
-
-
-		}
-		else {
-			int i;
-			_head = newNode;
-			_head->_next = _head;
-
-			for (i = 0, p = _head; i < _size; p = p->_next, i++); //points "p" to last node in list
-
-			p->_next = _head;//points the last node's next to head to make the list circular
-		}
-
-		_size++;
-
-	}
-
-	void Pop() {
-
-		Node* toDel, *p;
-
-		if (_size > 1) {
-			int i;
-
-			toDel = _head;			//makes head's next the new head
-			_head = _head->_next;
-
-			_size--;
-
-			for (i = 0, p = _head; i < _size - 1; p = p->_next, i++); //points "p" to last node in list
-
-			p->_next = _head;//sets last node in list to "head" to maintain a circular list
-
-			delete toDel;
-		}
-		else if (_size == 1) {
-			toDel = _head;
-			_head = (Node*)0;
-
-			delete toDel;
-
-			_size--;
-		}
-	}
-
-	int GetSize() const {
-		return _size;
-	}
-
-	void Print() const{
-		int i;
-		Node* p;
-
-		for (i = 0, p = _head; i < _size; p = p->_next, i++) {
-			cout << *p;
-		}
-	}
-
-	//
-	CircularList& operator=(const CircularList& rhs) {
-		int i;
-		Node newNode, *p;
-
-		for (i = 0, p = rhs._head; i < rhs._size; p = p->_next, i++) {
-			newNode._coefficient = p->_coefficient;
-			newNode._exponent = p->_exponent;
-			Append(newNode);
-		}
-
-		return *this;
-	}
-
-	//outputs the content of the linked list via << operator
-	friend ostream& operator<<(ostream& os, const CircularList& cl) {
-		int i;
-		Node* p;
-
-		for (i = 0, p = cl._head; i < cl._size; p = p->_next, i++) {
-			os << *p;
-		}
-		return os;
-	}
-
-	//adds a node to a CircularList via >> operator
-	friend CircularList& operator>>(const Node& lhs, CircularList& rhs) {
-		rhs.Append(lhs);
-		return rhs;
-	}
-
-	//reads a new node from istream and adds it to the list
-	//TODO implement this
-	friend istream& operator>>(istream& is, const CircularList& cl) {
-		//n.Append(n);
-		return is; 
-	}
-
-	~CircularList() {
-		while (_head) {
-			Pop();
-		}
-	}
-
-	friend class Iterator;
+	friend class Iterator<T>;
 };
 
-//TODO decide if I'm going to use an iterator. Would be useful for 
+
+//Iterator Class
+template <class T>
 class Iterator {
 
 private:
-	Node*	_head, _cur;
+	Node<T>*	_head, *_cur;
+	int			_size;
 
 public:
-	Iterator() {
+	Iterator();
+	Iterator(const CircularList<T> c);
+	int GoNext();
+	int GoHead();
+	T GetData() const;
+	int GetSize() const;
+	Iterator& operator=(const CircularList<T>& rhs);
 
-	}
-
-	int GoNext() {
-
-	}
-
-	int GoHead() {
-	
-	}
-
-	int GetData() {
-
-	}
-
-	friend Iterator& operator=(const CircularList& rhs) {
-
-	}
-
-	friend Iterator& operator=(const Iterator& i){
-
-	}
 };
 
-/*--- =Operator ---*/
-//assigns an iterator to a particular circular linked list
-/*void operator=(Iterator& lhs, CircularList& rhs) {
-	lhs._head = rhs.head;
-	lhs._cur = rhs.head;
-}*/
+
+/****************************
+ *   Overloaded Operators   *
+ ****************************/
+
+//TODO decide if I want to make ALL overloaded functions friend functions for consistency and to get rid of Iterator class definition within them
+//adds a node to a CircularList via >> operator
+template <class T>
+CircularList<T>& operator>>(const Node<T>& lhs, CircularList<T>& rhs);
+
+
+//TODO fix this... not working properly. Going to work on more exciting things :)
+template <class T>
+istream& operator>>(istream& is, CircularList<T>& cl);
+
+//outputs the content of the linked list via << operator
+template <class T>
+ostream& operator<<(ostream& os, const CircularList<T>& cl);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#include "CircularList.h"
+
+/*---Node Class---*/
+
+template <class T>
+Node<T>::Node() {
+	_data = (T)0;
+	_next = (Node<T>*)0;
+}
+
+template <class T>
+void Node<T>::SetData(T data) {
+	_data = data;
+}
+
+template <class T>
+void Node<T>::Print() const {
+	cout << _data << endl;
+}
+
+template <class T>
+ostream& operator<<(ostream& os, const Node<T>& n) {
+	return os << _data << endl;
+}
+
+template <class T>
+istream& operator>>(istream& is, Node<T>& n) {
+	return is >> n._coefficient >> n._exponent;
+}
+
+
+
+//Circular List 
+template <class T>
+CircularList<T>::CircularList() {
+	_head = (Node<T>*)0;
+	_size = 0;
+}
+
+template <class T>
+CircularList<T>::CircularList(const CircularList<T>& src) {
+	if (this != &src) {
+		*this = src;
+	}
+}
+
+template <class T>
+void CircularList<T>::Append(Node<T> n) {
+
+	Node<T>* newNode = new Node<T>, *p;
+
+	newNode->_data = n._data;
+	newNode->_next = (Node<T>*)0;
+
+	if (_head) {
+
+		//if there are nodes in the list
+
+		int i;
+
+
+		for (i = 0, p = _head; i < _size - 1; p = p->_next, i++);//points "p" to last node in list
+
+		p->_next = newNode;
+		newNode->_next = _head;
+
+	}
+	else {
+
+		//if the list is empty
+
+		_head = newNode;
+		_head->_next = _head;
+
+	}
+
+	_size++;
+
+}
+
+template <class T>
+void CircularList<T>::Push(Node<T> n) {
+
+	Node<T>* newNode = new Node<T>, *p;
+
+	newNode->_data = n._data;
+	newNode->_next = (Node<T>*)0;
+
+	if (_head) {
+
+		newNode->_next = _head;
+		_head = newNode;
+
+	}
+	else {
+
+		int i;
+
+		_head = newNode;
+		_head->_next = _head;
+
+		for (i = 0, p = _head; i < _size; p = p->_next, i++); //points "p" to last node in list
+
+		p->_next = _head;//points the last node's next to head to make the list circular
+
+	}
+
+	_size++;
+
+}
+
+template <class T>
+void CircularList<T>::Pop() {
+
+	Node<T>* toDel, *p;
+
+	if (_size > 1) {
+		int i;
+
+		toDel = _head;			//makes head's next the new head
+		_head = _head->_next;
+
+		_size--;
+
+		for (i = 0, p = _head; i < _size - 1; p = p->_next, i++); //points "p" to last node in list
+
+		p->_next = _head;//sets last node in list to "head" to maintain a circular list
+
+		delete toDel;
+	}
+	else if (_size == 1) {
+		toDel = _head;
+		_head = (Node<T>*)0;
+
+		delete toDel;
+
+		_size--;
+	}
+}
+
+template <class T>
+int CircularList<T>::GetSize() const {
+	return _size;
+}
+
+template <class T>
+void CircularList<T>::Print() const{
+	int			i;
+	Node<T>*	p;
+
+	for (i = 0, p = _head; i < _size; p = p->_next, i++) {
+		cout << *p;
+	}
+}
+
+template <class T>
+CircularList<T>& CircularList<T>::operator=(const CircularList<T>& rhs) {
+	int		i;
+	Node<T>	newNode, *p;
+
+	for (i = 0, p = rhs._head; i < rhs._size; p = p->_next, i++) {
+		newNode._coefficient = p->_coefficient;
+		newNode._exponent = p->_exponent;
+		Append(newNode);
+	}
+
+	return *this;
+}
+
+template <class T>
+CircularList<T>::~CircularList() {
+	while (_head) {
+		Pop();
+	}
+}
+
+//Iterator Class
+
+template <class T>
+Iterator<T>::Iterator() {
+	_head = _cur = (Node<T>*)0;
+	_size = 0;
+}
+
+template <class T>
+Iterator<T>::Iterator(const CircularList<T> c) {
+	_head = _head = c._head;
+	_size = c._size;
+}
+
+template <class T>
+int Iterator<T>::GoNext() {
+
+	int success = 1;
+
+	if (_cur) {
+		_cur = _cur->_next;
+	}
+	else {
+		success = 0;
+	}
+
+	return success;
+}
+
+template <class T>
+int Iterator<T>::GoHead() {
+
+	int success = 1;
+
+	if (_head) {
+		_cur = _head;
+	}
+	else {
+		success = 0;
+	}
+
+	return success;
+}
+
+template <class T>
+T Iterator<T>::GetData() const {
+	return _data;
+}
+
+template <class T>
+int Iterator<T>::GetSize() const {
+	return _size;
+}
+
+template <class T>
+Iterator<T>& Iterator<T>::operator=(const CircularList<T>& rhs) {
+	_cur = _head = rhs._head;
+	_size = rhs._size;
+	return *this;
+}
+
+
+
+
+
+
+
+/****************************
+*   Overloaded Operators   *
+****************************/
+
+//TODO decide if I want to make ALL overloaded functions friend functions for consistency and to get rid of Iterator class definition within them
+//adds a node to a CircularList via >> operator
+template <class T>
+CircularList<T>& operator>>(const Node<T>& lhs, CircularList<T>& rhs) {
+	rhs.Append(lhs);
+	return rhs;
+}
+
+
+//TODO fix this... not working properly. Going to work on more exciting things :)
+template <class T>
+istream& operator>>(istream& is, CircularList<T>& cl) {
+	int		coefficient, exponent;
+	Node<T>	newNode;
+
+	is >> coefficient >> exponent >> newNode;
+
+	cl.Append(newNode);
+
+	return is;
+}
+
+//outputs the content of the linked list via << operator
+template <class T>
+ostream& operator<<(ostream& os, const CircularList<T>& cl) {
+
+	int			x, size;
+	Iterator<T>	i;
+
+	i = cl;
+
+	size = i.GetSize();
+
+	for (x = 0; x < size; x++) {
+		os << i.GetData();
+		i.GoNext();
+	}
+	return os;
+}
+
 #endif

@@ -12,8 +12,10 @@ class CircularList;
 template <class T>
 class Iterator;
 
-/*---Node Class---*/
 
+/******************
+ *   Node Class   *
+ ******************/
 template <class T>
 class Node {
 
@@ -35,7 +37,9 @@ public:
 
 
 
-/*---Circular List Class---*/
+/***************************
+ *   Circular List Class   *
+ ***************************/
 template <class T>
 class CircularList {
 
@@ -59,7 +63,9 @@ public:
 };
 
 
-//Iterator Class
+/**********************
+ *   Iterator Class   *
+ **********************/
 template <class T>
 class Iterator {
 
@@ -79,21 +85,16 @@ public:
 };
 
 
+
+
 /****************************
  *   Overloaded Operators   *
  ****************************/
 
-//TODO decide if I want to make ALL overloaded functions friend functions for consistency and to get rid of Iterator class definition within them
-//adds a node to a CircularList via >> operator
 template <class T>
 CircularList<T>& operator>>(const Node<T>& lhs, CircularList<T>& rhs);
-
-
-//TODO fix this... not working properly. Going to work on more exciting things :)
 template <class T>
 istream& operator>>(istream& is, CircularList<T>& cl);
-
-//outputs the content of the linked list via << operator
 template <class T>
 ostream& operator<<(ostream& os, const CircularList<T>& cl);
 
@@ -105,27 +106,20 @@ ostream& operator<<(ostream& os, const CircularList<T>& cl);
 
 
 
+/*************************************
+ *                                   *
+ *
+ *       Function Declarations       *
+ *                                   *
+ *                                   *
+ *************************************/
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//#include "CircularList.h"
-
-/*---Node Class---*/
-
+/******************
+*   Node Class   *
+******************/
 template <class T>
 Node<T>::Node() {
 	_data = (T)0;
@@ -154,7 +148,9 @@ istream& operator>>(istream& is, Node<T>& n) {
 
 
 
-//Circular List 
+/***************************
+*   Circular List Class   *
+***************************/
 template <class T>
 CircularList<T>::CircularList() {
 	_head = (Node<T>*)0;
@@ -298,8 +294,11 @@ CircularList<T>::~CircularList() {
 	}
 }
 
-//Iterator Class
 
+
+/**********************
+*   Iterator Class   *
+**********************/
 template <class T>
 Iterator<T>::Iterator() {
 	_head = _cur = (Node<T>*)0;

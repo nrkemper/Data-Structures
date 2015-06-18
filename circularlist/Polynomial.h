@@ -21,8 +21,70 @@ variable_t& operator=(variable_t& lhs, const variable_t& rhs) {
 }*/
 
 class Polynomial {
+	
+private:
 	CircularList<variable_t> cll;
 
+	void Simplify() {
+		int 	x, y, listSize;
+
+		for( x=0, listSize = cll.getSize(); x < listSize; x++ ) {
+			for( y=x; y < listSize; y++ ) {
+				if( cll[x]._exponent == cll[y]._exponent ) {
+					cll[x]._coefficient += cll[y]._coefficient;
+					cll.remove(y);
+				}
+			}
+		}
+	}
+
+	void Sort() {
+		int 		x, y, listSize;
+		variable_t 	temp;
+
+		for( x=0, listSize = cll.getSize(); x < listSize; x++ ) {
+			for( y = x; y < listSize; y++ ) {
+				if( cll[x]._exponent < cll[y]._exponent) {
+					temp = cll[y];
+					cll[y] = cll[x];
+					cll[x] = temp;
+				}
+			}
+		} 
+
+		
+	}
+
+public:
+	Polynomial() {
+		cll.AddNode( (variable_t){ 0, -1 } );
+	}
+
+	friend istream& operator>>( istream& is, const Polynomial& pn ) {
+
+	}
+
+	friend ostream& operator<<( ostream& os, const Polynomial& pn ) {
+
+	}
+
+	friend Polynomial& operator+( const Polynomial& p1, 
+				      const Polynomial& p2 ) {
+
+	}
+	friend Polynomial& operator-( const Polynomial& p1, 
+				      const Polynomial p2 ) {
+
+	}
+	
+	friend Polynomial& operator*( const Polynomial& p1, 
+				      const Polynomial p2 ) {
+
+	}
+	
+	~Polynomail() {
+
+	}
 };
 
 #endif

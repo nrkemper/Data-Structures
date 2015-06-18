@@ -21,11 +21,12 @@ class Node {
 
 private:
 	Node<T>*	_next;
-	T			_data; 
+	T		_data; 
+
+	Node();
 
 public:
 
-	Node();
 	void SetData(T data);
 	void Print() const;
 	friend ostream& operator<<(ostream& os, const Node<T>& n);
@@ -45,7 +46,7 @@ class CircularList {
 
 private:
 	Node<T>*	_head;
-	int			_size;
+	int		_size;
 
 public:
 
@@ -57,6 +58,7 @@ public:
 	int GetSize() const;
 	void Print() const;
 	CircularList<T>& operator=(const CircularList<T>& rhs);
+	T& operator[](const int i);
 	~CircularList();
 
 	friend class Iterator<T>;
@@ -71,7 +73,7 @@ class Iterator {
 
 private:
 	Node<T>*	_head, *_cur;
-	int			_size;
+	int		_size;
 
 public:
 	Iterator();
@@ -288,6 +290,16 @@ CircularList<T>& CircularList<T>::operator=(const CircularList<T>& rhs) {
 }
 
 template <class T>
+T& operator[](const int i){
+	int n;
+	Node<T>* p;
+
+	for( n=0, p=_head; n<i; n++, p=p->_next );
+	
+	return p->_data;	
+}
+
+template <class T>
 CircularList<T>::~CircularList() {
 	while (_head) {
 		Pop();
@@ -394,7 +406,7 @@ istream& operator>>(istream& is, CircularList<T>& cl) {
 template <class T>
 ostream& operator<<(ostream& os, const CircularList<T>& cl) {
 
-	int			x, size;
+	int		x, size;
 	Iterator<T>	i;
 
 	i = cl;

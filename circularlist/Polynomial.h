@@ -23,24 +23,80 @@ variable_t& operator=(variable_t& lhs, const variable_t& rhs) {
 template <class T>
 class Pointer
 {
-    T*      _p{};
+        T*      _p{};
     
 public:
     
-    void operator= (T* p)
-    {
-            if(_p)
-                    delete p;
+        void operator= (T* p)
+        {
+                if(_p)
+                        delete p;
         
-            _p = p;
-    }
+                _p = p;
+        }
     
-    ~Pointer ()
-    {
-            if (_p)
-                    delete _p;
-    }
+        ~Pointer ()
+        {
+                if (_p)
+                        delete _p;
+        }
 };
+
+#define PNTR_ARR_INC_BY     10
+
+template <class T>
+class PntrArr_t
+{
+        static T**      _list;
+        static int      _size, _num;
+    
+public:
+        PntrArr_t ()
+        {
+                _list = new T*[PNTR_ARR_INC_BY];
+                _size = PNTR_ARR_INC_BY;
+                _num = 0;
+        }
+    
+        void operator+= (T*  p)
+        {
+                if (_num == _size)
+                {
+                        int     i;
+                        T**     newlist = new T*[_size + PNTR_ARR_INC_BY];
+                    
+                        for (i=0 ; i<_size ; i++)
+                            newlist[i] = _list[i];
+                    
+                        delete _list;
+                    
+                        _list = newlist;
+                    
+                        _size += PNTR_ARR_INC_BY;
+                }
+            
+                _list[_num++] = p;
+        }
+    
+        ~PntrArr_t()
+        {
+                int     i;
+            
+                for (i=0 ; i<_num ; i++)
+                        delete _list[i];
+            
+                delete _list;
+        }
+};
+
+template <class T> int PntrArr_t<T>::_size  = 0;
+template <class T> int PntrArr_t<T>::_num   = 0;
+template <class T> T** PntrArr_t<T>::_list  = (T**)0;
+
+class Polynomial;
+
+PntrArr_t<Polynomial>   pntr_arr;
+
 
 class Polynomial {
 	
@@ -93,16 +149,21 @@ public:
 	friend Polynomial& operator+( const Polynomial& p1, 
 				      const Polynomial& p2 ) {
             Polynomial* newPoly = new Polynomial;
-            return newPoly;
+            pntr_arr+= newPoly;
+            return *newPoly;
 	}
 	friend Polynomial& operator-( const Polynomial& p1,
 				      const Polynomial p2 ) {
-        return p1;
+            Polynomial* newPoly = new Polynomial;
+            pntr_arr+= newPoly;
+            return *newPoly;
 	}
 	
-	friend Polynomial& operator*( const Polynomial& p1, 
+	friend Polynomial& operator*( const Polynomial& p1,
 				      const Polynomial p2 ) {
-        return p1;
+            Polynomial* newPoly = new Polynomial;
+            pntr_arr+= newPoly;
+            return *newPoly;
 	}
 	
 	~Polynomial() {

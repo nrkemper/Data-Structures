@@ -256,7 +256,7 @@ int CircularList<T>::Remove(int i)
     
         if (i>=0 && i<=_size-1)
         {
-                Node<T>*    toDel,  *p;
+               // Node<T>*    toDel,  *p;
             
         }
         else

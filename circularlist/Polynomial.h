@@ -23,10 +23,11 @@ variable_t& operator=(variable_t& lhs, const variable_t& rhs) {
 template <class T>
 class Pointer
 {
+    
+private:
         T*      _p{};
     
 public:
-    
         void operator= (T* p)
         {
                 if(_p)
@@ -47,6 +48,8 @@ public:
 template <class T>
 class PntrArr_t
 {
+    
+private:
         static T**      _list;
         static int      _size, _num;
     

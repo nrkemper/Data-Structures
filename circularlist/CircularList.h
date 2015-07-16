@@ -53,8 +53,8 @@ public:
         CircularList();
         CircularList(const CircularList<T>& src);
         void Append(T data);
-        void Push(Node<T> n);
-        void Pop();
+        void Push(T data);
+        int Pop();
         int Remove(int i);
         int GetSize() const;
         void Print() const;
@@ -83,7 +83,7 @@ public:
         int GoHead();
         T GetData() const;
         int GetSize() const;
-        Iterator& operator=(const CircularList<T>& rhs);
+        Iterator operator=(const CircularList<T>& rhs);
 
 };
 
@@ -153,27 +153,29 @@ istream& operator>> (istream& is, Node<T>& n)
 *   Circular List Class   *
 ***************************/
 template <class T>
-CircularList<T>::CircularList() {
+CircularList<T>::CircularList()
+{
         _head = (Node<T>*)0;
         _size = 0;
 }
 
 template <class T>
-CircularList<T>::CircularList(const CircularList<T>& src) {
-        if (this != &src) {
+CircularList<T>::CircularList(const CircularList<T>& src)
+{
+        if (this != &src)
                 *this = src;
-        }
 }
 
 template <class T>
-void CircularList<T>::Append(T data) {
-
-        Node<T>* newNode = new Node<T>, *p;
+void CircularList<T>::Append(T data)
+{
+        Node<T>*    newNode = new Node<T>, *p;
 
         newNode->_data = data;
         newNode->_next = (Node<T>*)0;
 
-        if (_head) {
+        if (_head)
+        {
                 //if there are nodes in the list
 
                 int i;
@@ -183,7 +185,8 @@ void CircularList<T>::Append(T data) {
                 p->_next = newNode;
                 newNode->_next = _head;
         }
-        else {
+        else
+        {
                 //if the list is empty
 
                 _head = newNode;
@@ -195,18 +198,21 @@ void CircularList<T>::Append(T data) {
 }
 
 template <class T>
-void CircularList<T>::Push(Node<T> n) {
+void CircularList<T>::Push(T data)
+{
 
         Node<T>* newNode = new Node<T>, *p;
 
-        newNode->_data = n._data;
+        newNode->_data = data;
         newNode->_next = (Node<T>*)0;
 
-        if (_head) {
+        if (_head)
+        {
                 newNode->_next = _head;
                 _head = newNode;
         }
-        else {
+        else
+        {
                 int     i;
 
                 _head = newNode;
@@ -221,70 +227,126 @@ void CircularList<T>::Push(Node<T> n) {
 }
 
 template <class T>
-void CircularList<T>::Pop() {
-
-        Node<T>* toDel, *p;
-
-        if (_size > 1) {
+int CircularList<T>::Pop()
+{
+        Node<T>         *toDel = NULL, *p;
+        int             success=1;
+        
+        if (_size > 1)
+        {
                 int i;
 
                 toDel = _head;			//makes head's next the new head
                 _head = _head->_next;
 
-                _size--;
-
                 for (i=0, p=_head; i<_size-1 ; p=p->_next, i++); //points "p" to last node in list
 
                 p->_next = _head;//sets last node in list to "head" to maintain a circular list
-
-                delete toDel;
         }
-        else if (_size == 1) {
+        else if (_size == 1)
+        {
                 toDel = _head;
                 _head = (Node<T>*)0;
-
+        }
+        else
+        {
+                success = 0;
+        }
+        
+        if (success)
+        {
                 delete toDel;
-
                 _size--;
         }
+        
+        return success;
 }
 
 template <class T>
 int CircularList<T>::Remove(int i)
 {
-        int     success = 1;
-    
-        if (i>=0 && i<=_size-1)
+        int             success=1, x;
+        Node<T>*        toDel = NULL,  *p;
+                
+        if (_size>1 && i>0 && i<_size-1)
         {
-               // Node<T>*    toDel,  *p;
-            
+                //node is in the middle
+                for (x=0 , p=_head ; x<i-1 ; x++, p=p->_next);
+                
+                toDel = p->_next;
+                
+                p->_next = p->_next->_next;
+                
+                delete toDel;
+        }
+        else if (i==0 && _size>1)
+        {
+                //node is at head
+                toDel = _head;
+                
+                _head = _head->_next;
+                
+                for (x=0, p=_head ; x<_size-1 ; x++, p=p->_next);
+                
+                p->_next = _head;
+        }
+        else if (i==_size-1 && _size>1)
+        {
+                //node is at tail
+                for (x=0 , p=_head ; x<i-1 ; x++, p=p->_next);
+                
+                toDel = p->_next;
+                
+                p->_next = _head;
+        }
+        else if (_size==1)
+        {
+                //there is one node
+                toDel = _head;
+                _head = (Node<T>*)0;
         }
         else
         {
                 success = 0;
         }
     
+        if (success)
+        {
+                delete toDel;
+                _size--;
+        }
+        
         return success;
 }
 
 template <class T>
-int CircularList<T> :: GetSize () const {
+int CircularList<T> :: GetSize () const
+{
         return _size;
 }
 
 template <class T>
-void CircularList<T>::Print() const{
+void CircularList<T>::Print() const
+{
         int			i;
         Node<T>*	p;
 
         for (i=0, p=_head ; i<_size ; p=p->_next, i++)
+        {
                 cout << p->_data;
+            
+                if (i<_size-1)
+                        cout << " ";
+        }
+    
+        cout << endl;
 }
 
 template <class T>
-CircularList<T>& CircularList<T>::operator=(const CircularList<T>& rhs) {
-        int		i;
-        Node<T>	newNode, *p;
+CircularList<T>& CircularList<T>::operator=(const CircularList<T>& rhs)
+{
+        int         i;
+        Node<T>     newNode, *p;
 
         for (i=0, p=rhs._head ; i<rhs._size ; p=p->_next, i++)
         {
@@ -297,9 +359,10 @@ CircularList<T>& CircularList<T>::operator=(const CircularList<T>& rhs) {
 }
 
 template <class T>
-T& CircularList<T>::operator[](const int i){
-        int n;
-        Node<T>* p;
+T& CircularList<T>::operator[](const int i)
+{
+        int         n;
+        Node<T>     *p;
 
         for (n=0, p=_head ; n<i ; n++, p=p->_next);
 	
@@ -307,7 +370,8 @@ T& CircularList<T>::operator[](const int i){
 }
 
 template <class T>
-CircularList<T>::~CircularList() {
+CircularList<T>::~CircularList()
+{
         while (_head)
                 Pop();
 }
@@ -318,19 +382,22 @@ CircularList<T>::~CircularList() {
 *   Iterator Class   *
 **********************/
 template <class T>
-Iterator<T>::Iterator() {
+Iterator<T>::Iterator()
+{
         _head = _cur = (Node<T>*)0;
         _size = 0;
 }
 
 template <class T>
-Iterator<T>::Iterator(const CircularList<T> c) {
+Iterator<T>::Iterator(const CircularList<T> c)
+{
         _head = _head = c._head;
         _size = c._size;
 }
 
 template <class T>
-int Iterator<T>::GoNext() {
+int Iterator<T>::GoNext()
+{
         int success = 1;
 
         if (_cur)
@@ -342,8 +409,9 @@ int Iterator<T>::GoNext() {
 }
 
 template <class T>
-int Iterator<T>::GoHead() {
-        int success = 1;
+int Iterator<T>::GoHead()
+{
+        int success=1;
 
         if (_head)
                 _cur = _head;
@@ -354,17 +422,20 @@ int Iterator<T>::GoHead() {
 }
 
 template <class T>
-T Iterator<T>::GetData() const {
+T Iterator<T>::GetData() const
+{
         return _cur->_data;
 }
 
 template <class T>
-int Iterator<T>::GetSize() const {
+int Iterator<T>::GetSize() const
+{
         return _size;
 }
 
 template <class T>
-Iterator<T>& Iterator<T>::operator=(const CircularList<T>& rhs) {
+Iterator<T> Iterator<T>::operator=(const CircularList<T>& rhs)
+{
         _cur = _head = rhs._head;
         _size = rhs._size;
     
@@ -384,38 +455,41 @@ Iterator<T>& Iterator<T>::operator=(const CircularList<T>& rhs) {
 //TODO decide if I want to make ALL overloaded functions friend functions for consistency and to get rid of Iterator class definition within them
 //adds a node to a CircularList via >> operator
 template <class T>
-CircularList<T>& operator>>(const Node<T>& lhs, CircularList<T>& rhs) {
-        rhs.Append(lhs);
+CircularList<T>& operator>>(const Node<T>& lhs, CircularList<T>& rhs)
+{
+        rhs.Append (lhs);
         return rhs;
 }
 
 
 //TODO fix this... not working properly. Going to work on more exciting things :)
 template <class T>
-istream& operator>>(istream& is, CircularList<T>& cl) {
-        int		coefficient, exponent;
-        Node<T>	newNode;
+istream& operator>>(istream& is, CircularList<T>& cl)
+{
+        int         coefficient, exponent;
+        Node<T>     newNode;
 
         is >> coefficient >> exponent >> newNode;
 
-        cl.Append(newNode);
+        cl.Append (newNode);
 
         return is;
 }
 
 //outputs the content of the linked list via << operator
 template <class T>
-ostream& operator<<(ostream& os, const CircularList<T>& cl) {
-
-        int		x, size;
-        Iterator<T>	i;
+ostream& operator<<(ostream& os, const CircularList<T>& cl)
+{
+        int             x, size;
+        Iterator<T>     i;
 
         i = cl;
 
         size = i.GetSize();
 
-        for (x = 0; x < size; x++) {
-                os << i.GetData();
+        for (x=0 ; x<size ; x++)
+        {
+                os << i.GetData ();
                 i.GoNext();
         }
     

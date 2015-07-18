@@ -41,7 +41,6 @@ private:
         int         _size;
 
 public:
-
         CircularList();
         CircularList(const CircularList<T>& src);
         void Append(T data);
@@ -139,7 +138,7 @@ void CircularList<T>::Append(T data)
         Node<T>*    newNode = new Node<T>, *p;
         
         newNode->_data = data;
-        newNode->_next = (Node<T>*)0;
+        newNode->_next = _head;
         
         if (_head)
         {
@@ -150,14 +149,12 @@ void CircularList<T>::Append(T data)
                 for (i=0, p=_head ; i<_size-1 ; p=p->_next, i++);//points "p" to last node in list
                 
                 p->_next = newNode;
-                newNode->_next = _head;
         }
         else
         {
                 //if the list is empty
                 
                 _head = newNode;
-                _head->_next = _head;
         }
         
         _size++;
@@ -206,7 +203,7 @@ int CircularList<T>::Pop()
                 toDel = _head;			//makes head's next the new head
                 _head = _head->_next;
                 
-                for (i=0, p=_head; i<_size-1 ; p=p->_next, i++); //points "p" to last node in list
+                for (i=0, p=_head; i<_size-2 ; p=p->_next, i++); //points "p" to last node in list
                 
                 p->_next = _head;//sets last node in list to "head" to maintain a circular list
         }
@@ -243,8 +240,6 @@ int CircularList<T>::Remove(int i)
                 toDel = p->_next;
                 
                 p->_next = p->_next->_next;
-                
-                delete toDel;
         }
         else if (i==0 && _size>1)
         {
@@ -312,14 +307,14 @@ void CircularList<T>::Print() const
 template <class T>
 CircularList<T>& CircularList<T>::operator=(const CircularList<T>& rhs)
 {
-        int         i;
-        Node<T>     newNode, *p;
+        int             i;
+        Node<T>         *p;
+        T               data;
         
         for (i=0, p=rhs._head ; i<rhs._size ; p=p->_next, i++)
         {
-                newNode._coefficient = p->_coefficient;
-                newNode._exponent = p->_exponent;
-                Append(newNode);
+                data = p->_data;
+                Append (data);
         }
         
         return *this;
@@ -408,11 +403,6 @@ Iterator<T> Iterator<T>::operator=(const CircularList<T>& rhs)
 }
 
 
-
-
-
-
-
 //----OVERLOADED FUNCTIONS----
 template <class T>
 CircularList<T>& operator>>(T data, CircularList<T>& cl)
@@ -440,8 +430,15 @@ ostream& operator<<(ostream& os, const CircularList<T>& cl)
         Iterator<T>     i;
         int             x, size;
         
-        for (i=cl, x=0, size=i.GetSize() ; x<size ; x++)
+        for (i=cl, x=0, size=i.GetSize() ; x<size ; x++, i.GoNext())
+        {
                 os << i.GetData();
+                
+                if (x<size-1)
+                        os << " ";
+        }
+        
+        os << endl;
         
         return os;
 }

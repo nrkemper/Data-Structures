@@ -10,108 +10,39 @@
 typedef struct
 {
         int		_coefficient, _exponent;
-} variable_t;
+} indeterminant_t;
 
 
-/*ostream& operator<<(ostream& os, const variable_t& v) {
-	return os << "Coefficient: " << v._coefficient << endl << "Exponent: " << v._exponent << endl;
-}
+ostream& operator<<(ostream& os, const indeterminant_t& v);
 
-variable_t& operator=(variable_t& lhs, const variable_t& rhs) {
-	lhs._coefficient	= rhs._coefficient;
-	lhs._exponent		= rhs._exponent;
-	return lhs;
-}*/
 class Polynomial {
 	
 private:
-        CircularList<variable_t> cll;
-
-        void Simplify()
-        {
-                int 	x, y, listSize;
-
-                for( x=0, listSize=cll.GetSize() ; x<listSize ; x++ )
-                {
-                        for( y=x; y < listSize; y++ )
-                        {
-                                if( cll[x]._exponent == cll[y]._exponent )
-                                {
-                                        cll[x]._coefficient += cll[y]._coefficient;
-                                        cll.Remove(y);
-                                }
-                        }
-                }
-        }
-
-        void Sort() {
-                int 		x, y, listSize;
-                variable_t 	temp;
-
-                for( x=0, listSize = cll.GetSize(); x < listSize; x++ )
-                {
-                        for( y = x; y < listSize; y++ )
-                        {
-                                if( cll[x]._exponent < cll[y]._exponent)
-                                {
-                                        temp = cll[y];
-                                        cll[y] = cll[x];
-                                        cll[x] = temp;
-                                }
-                        }
-                }
-
-		
-	}
+        CircularList<indeterminant_t> cll;
 
 public:
-	Polynomial() {
-		cll.Append ( (variable_t){ 0, -1 } );
-	}
+        Polynomial();
+        void Simplify();
+        void Sort();
 
-        friend istream& operator>>( istream& is, const Polynomial& pn );
-
+        friend istream& operator>>( istream& is, Polynomial& pn );
         friend ostream& operator<<( ostream& os, const Polynomial& pn );
+        
         friend Polynomial& operator+( const Polynomial& p1, const Polynomial& p2 );
         friend Polynomial& operator-( const Polynomial& p1,const Polynomial p2 );
         friend Polynomial& operator*( const Polynomial& p1, const Polynomial p2 );
 	
-        ~Polynomial() {
-
-	}
+        ~Polynomial();
 };
 
 
-TrashBin<Polynomial>     trashbin;
+extern TrashBin<Polynomial>     ply_trshbin;
 
-istream& operator>>( istream& is, const Polynomial& pn )
-{
-        return is;
-}
+istream& operator>>( istream& is, const Polynomial& pn );
+ostream& operator<<( ostream& os, const Polynomial& pn );
 
-ostream& operator<<( ostream& os, const Polynomial& pn )
-{
-        return os;
-}
+Polynomial& operator+( const Polynomial& p1, const Polynomial& p2 );
+Polynomial& operator-( const Polynomial& p1, const Polynomial p2 );
+Polynomial& operator*( const Polynomial& p1, const Polynomial p2 );
 
-Polynomial& operator+( const Polynomial& p1, const Polynomial& p2 )
-{
-        Polynomial* newPoly = new Polynomial;
-        trashbin+= newPoly;
-        return *newPoly;
-}
-
-Polynomial& operator-( const Polynomial& p1, const Polynomial p2 )
-{
-        Polynomial* newPoly = new Polynomial;
-        trashbin+= newPoly;
-        return *newPoly;
-}
-
-Polynomial& operator*( const Polynomial& p1, const Polynomial p2 )
-{
-        Polynomial* newPoly = new Polynomial;
-        trashbin+= newPoly;
-        return *newPoly;
-}
 #endif
